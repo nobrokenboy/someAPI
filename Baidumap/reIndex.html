@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<title>批量反地址解析</title>
+	<style type="text/css">
+		body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+		#l-map{height:300px;width:100%;}
+		#r-result{width:100%; font-size:14px;line-height:20px;}
+	</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=l9egnHr9ZRypeMmcpZsIn30K"></script>
+</head>
+<body>
+	<div id="l-map"></div>
+	<div id="r-result">
+		<!--<input type="button" value="批量反地址解析" onclick="bdGEO(0)" />-->
+		<div id="result"></div>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+	// 百度地图API功能
+	var map = new BMap.Map("l-map");
+	map.centerAndZoom(new BMap.Point(113.38587,23.11748), 13);//设置中心点
+	map.enableScrollWheelZoom(true);
+	var index = 0;
+	var myGeo = new BMap.Geocoder();
+	var adds = [
+		new BMap.Point(113.38587,23.11748),
+		new BMap.Point(113.38587,23.12),
+		new BMap.Point(113.38587,23.22),
+		new BMap.Point(113.38587,23.123),
+		new BMap.Point(113.38587,23.11748),
+		new BMap.Point(113.38587,23.11748),
+		new BMap.Point(113.38587,39.999411),
+		new BMap.Point(113.38587,40.05901)
+	];
+	for(var i = 0; i<adds.length; i++){
+		var marker = new BMap.Marker(adds[i]);
+		map.addOverlay(marker);
+		/*marker.setLabel(new BMap.Label("我是商圈:"+(i+1),{offset:new BMap.Size(20,-10)}));*/
+	}
+	bdGEO(0);
+	function bdGEO(){	
+		var pt = adds[index];
+		geocodeSearch(pt);
+		index++;
+	}
+	function geocodeSearch(pt){
+		if(index < adds.length-1){
+			setTimeout(window.bdGEO,400);
+		} 
+		myGeo.getLocation(pt, function(rs){
+			console.log(rs);
+			var addComp = rs.addressComponents;
+			console.log(addComp);
+			/*document.getElementById("result").innerHTML += index + ". " +adds[index-1].lng + "," + adds[index-1].lat + "："  + "商圈(" + rs.business + ")  结构化数据(" + addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber + ")<br/><br/>";*/
+			document.getElementById("result").innerHTML+=index+":"+rs.address+"<br/>"
+		});
+	}
+	
+	
+</script>

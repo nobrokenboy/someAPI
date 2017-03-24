@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>高德地图根据纬度获取地址</title>
+		<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=19d07b564cdcd9714bb4ff01c2ec87c7"></script>
+    	<script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+	    <style type="text/css">
+		    .location-lists{
+		    	border:1px solid #C7C7C7;
+		    	padding:10px;
+		    }
+	    	li{
+	    		list-style:none;
+	    		color:#2b2b2b;
+	    		margin-bottom:10px;
+	    		
+	    	}
+	    </style>
+	</head>
+	<body>
+		<div id="mapContainer">
+			
+		</div>
+		<div id="message">
+			<ul class="location-lists">
+				
+			</ul>
+		</div>
+		<script>
+		    var addresses=[
+		    	{
+		    		index:0,
+		    		lng:113.38587,
+		    		lat:23.11748
+		    	
+		    	},
+		    	{
+		    		index:1,
+		    		lng:115.3822937,
+		    		lat:39.91710958
+		    	},
+		    	{
+		    		index:2,
+		    		lng:112,
+		    		lat:23.11748
+		    	},
+		    	{
+		    		index:3,
+		    		lng:112.222,
+		    		lat:23.4
+		    	},
+		    	{
+		    		index:4,
+		    		lng:113.2222,
+		    		lat:23.4
+		    	},
+		    	{
+		    		index:5,
+		    		lng:113.2222,
+		    		lat:23.5
+		    	}
+		    ];
+		    //初始化地图
+		    var map=new AMap.Map('mapContainer', {
+		        resizeEnable: true
+		    });
+			var geocoder; 
+			/*var lnglatXY=new AMap.LngLat(113.38587,23.11748); */
+			var lnglatXYArrs=[];
+			//实例化多个经纬度对象
+			for(var i=0,j=addresses.length;i<j;i++){
+				lnglatXYArrs.push(new AMap.LngLat(addresses[i].lng,addresses[i].lat));
+			}
+			var insertHtml="";
+			//加载地理编码插件 
+			map.plugin(["AMap.Geocoder"],function(){ 
+			    
+				for(var i=0,j=lnglatXYArrs.length;i<j;i++){
+					(function(i){
+						geocoder=new AMap.Geocoder({ 
+							radius:1000, //以已知坐标为中心点，radius为半径，返回范围内兴趣点和道路信息 
+							extensions: "all"//返回地址描述以及附近兴趣点和道路信息，默认"base" 
+						}); 
+						//返回地理编码结果 
+						AMap.event.addListener(geocoder, "complete",function(data){
+							console.log(addresses[i].index);
+							insertHtml+="<li data-key='"+addresses[i].index+"'>详细地址："+data.regeocode.formattedAddress+"</li>";
+							console.log(insertHtml);
+							document.getElementsByClassName("location-lists")[0].innerHTML=insertHtml;
+						});
+						/*geocoder_callBack*/
+						//逆地理编码 
+						geocoder.getAddress(lnglatXYArrs[i]);
+					})(i);
+					
+				}
+				
+			
+			});
+			
+			/*是因为定位得到地址的时间先后吗(异步)？？？？*/
+			function geocoder_callBack(data){
+				/*console.log(index);*/
+//				console.log(data);
+				insertHtml+="<li data-key=\"\">详细地址："+data.regeocode.formattedAddress+"</li>";
+				console.log(insertHtml);
+				document.getElementsByClassName("location-lists")[0].innerHTML=insertHtml;
+				/*document.getElementsByClassName("location-lists")[0].append(str);*/
+				
+			}
+		</script>
+	</body>
+</html>
